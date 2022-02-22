@@ -1,0 +1,63 @@
+# DEV ENVIRONMENT
+spring:
+  profiles: development
+  batch:
+    initialize-schema: ALWAYS
+    job:
+      enabled: false
+  h2:
+    console.enabled: true 
+
+logging:
+  level:
+    com.zaxxer.hikari.HikariConfig: DEBUG 
+    com.zaxxer.hikari: TRACE
+    org.springframework.batch.item.database: DEBUG
+
+management:
+  health:
+    defaults: 
+      enabled: false
+    mongo:
+      enabled: true
+    db:
+      enabled: true
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      base-path: /monitor
+      exposure:
+        include: '*'
+
+# #Connection MongoDB
+mongodb:
+  uri: mongodb+srv://root:ylHEVhlKOYRpuz7U@staging-xwwin.mongodb.net/digital-rent?retryWrites=true&w=majority&waitQueueMultiple=500
+
+#Batch
+batch:
+  datasource:
+    url: jdbc:h2:~/batch_control;DB_CLOSE_ON_EXIT=FALSE
+    username: batch
+    password: batch
+
+#Connection SQL Server
+sqlserver:
+  datasource:
+    url: jdbc:sqlserver://srv-db-developer.ingaia.com.br;databaseName=valuecanal_developer
+    username: app_valuegaia.preprod
+    password: PreProd0102!
+    driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+aws:
+  accessKeyId: 
+  secretKey:
+  region: us-east-1
+  sqs:
+    queue:
+      name: staging-ms-events-migration-persons
+
+apis:
+  urls:
+    agency: https://stg-digital-rent-api.kenlo.io/agency/migration/progress

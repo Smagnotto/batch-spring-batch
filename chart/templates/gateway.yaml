@@ -1,0 +1,17 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: {{ .Values.application.name }}-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+    - port:
+        number: 80
+        name: {{ .Values.application.name }}-http-gtw
+        protocol: HTTP
+      hosts:
+        - {{ .Values.application.host }}
+        {{- if .Values.application.forwardHost }}
+        - {{ .Values.application.hostBalancerIstio }}
+        {{- end }}

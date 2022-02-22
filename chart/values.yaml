@@ -1,0 +1,10 @@
+application:
+  name: persons-batch
+  host:
+  forwardHost: true
+  hostBalancerIstio:
+  image:
+  version: v1
+  port: 8080
+  appEnvsFromSecrets: ""
+appEnvironment:

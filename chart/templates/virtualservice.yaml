@@ -1,0 +1,46 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: vs-{{ .Values.application.name }}
+spec:
+  hosts:
+    - {{ .Values.application.host }}
+    {{- if .Values.application.forwardHost }}
+    - {{ .Values.application.hostBalancerIstio }}
+    {{- end }}
+  gateways:
+    - {{ .Values.application.name }}-gateway
+  http:
+    - match:
+        - uri:
+            prefix: ''
+        {{- if .Values.application.forwardHost }}
+          headers:
+            x-forwarded-host:
+              exact: {{ .Values.application.host }}
+        {{- end }}
+      route:
+        - destination:
+            host: service-{{ .Values.application.name }}
+            port:
+              number: {{ .Values.application.port }}
+          {{- if .Values.application.forwardHost }}
+          headers:
+            request:
+              remove:
+              - x-forwarded-host
+              set:
+                Host: {{ .Values.application.host }}
+          {{- end }}
+      corsPolicy:
+        allowOrigins:
+          - exact: '*'
+        allowMethods:
+          - GET
+          - POST
+          - PATCH
+          - PUT
+          - DELETE
+          - OPTIONS
+        allowHeaders:
+          - '*'

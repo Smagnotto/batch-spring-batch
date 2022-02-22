@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.application.name }}-deployment
+  labels:
+    app: {{ .Values.application.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.application.name }}
+  template:
+    metadata:
+      labels:
+        sidecar.istio.io/inject: "true"
+        app: {{ .Values.application.name }}
+        version: "{{ .Values.application.version }}"
+    spec:
+      containers:
+      - name: {{ .Values.application.name }}
+        image: {{ .Values.application.image }}
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: 310m
+            memory: 800Mi
+          requests:
+            cpu: 155m
+            memory: 500Mi
+        livenessProbe:
+          failureThreshold: 1
+          httpGet:
+            path: /health
+            port: liveness-port
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        startupProbe:
+          failureThreshold: 30
+          httpGet:
+            path: /health
+            port: liveness-port
+            scheme: HTTP
+          initialDelaySeconds: 50
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        ports:
+        - name: liveness-port
+          containerPort: {{ .Values.application.port }}
+        env:
+        {{- include "helpers.list-env-variables" . | indent 8 }}
+        {{- include "helpers.list-env-variables-from-secrets" . | indent 8 }}

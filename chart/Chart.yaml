@@ -1,0 +1,4 @@
+apiVersion: v1
+description: Migration Persons - Batch
+name: persons-batch
+version: "1"
